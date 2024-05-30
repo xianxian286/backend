@@ -108,5 +108,16 @@ app.get('/courses/:courseId/students', jwtAuth, async (req, res) => {
   res.json(students);
 });
 
+//添加学生
+app.post('/courses/:courseId/students', jwtAuth, async (req, res) => {
+  const { name: studentName } = req.body;
+  const { courseId } = req.params;
+  await db.execute(`
+    INSERT INTO student(name, course_id)
+    VALUES(?, ?)
+  `, [studentName, courseId]);
+  res.json({ code: 0 });
+});
+
 
 app.listen(5050, () => console.log('Server is running on port 5050'));
