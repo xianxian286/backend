@@ -103,7 +103,7 @@ app.get('/courses/:courseId/students', jwtAuth, async (req, res) => {
   const [students] = await db.execute(`
     SELECT id, name
     FROM student
-    WHERE course_id = ? AND is_deleted = 0
+    WHERE course_id = ?
   `, [courseId]);
   res.json(students);
 });
