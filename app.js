@@ -100,5 +100,13 @@ app.delete('/courses/:courseId', jwtAuth, async (req, res) => {
 //获取学生
 app.get('/courses/:courseId/students', jwtAuth, async (req, res) => {
   const { courseId } = req.params;
-})
+  const [students] = await db.execute(`
+    SELECT id, name
+    FROM student
+    WHERE course_id = ? AND is_deleted = 0
+  `, [courseId]);
+  res.json(students);
+});
+
+
 app.listen(5050, () => console.log('Server is running on port 5050'));
