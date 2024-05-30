@@ -94,7 +94,7 @@ app.delete('/courses/:courseId', jwtAuth, async (req, res) => {
     SET is_deleted = 1
     WHERE id = ?
   `, [courseId]);
-  res.json({ code: 0 });
+  res.json({ code: 1 });
 });
 
 //获取学生
@@ -116,7 +116,7 @@ app.post('/courses/:courseId/students', jwtAuth, async (req, res) => {
     INSERT INTO student(name, course_id)
     VALUES(?, ?)
   `, [studentName, courseId]);
-  res.json({ code: 0 });
+  res.json({ code: 3 });
 });
 
 
