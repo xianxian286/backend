@@ -103,7 +103,7 @@ app.get('/courses/:courseId/students', jwtAuth, async (req, res) => {
   const [students] = await db.execute(`
     SELECT id, name
     FROM student
-    WHERE course_id = ?
+    WHERE course_id = ? AND is_deleted = 0
   `, [courseId]);
   res.json(students);
 });
@@ -119,5 +119,16 @@ app.post('/courses/:courseId/students', jwtAuth, async (req, res) => {
   res.json({ code: 3 });
 });
 
+
+//删除学生
+app.use('/courses/:courseId/students/:studentId', jwtAuth, async (req, res) => {
+  const { studentId } = req.params;
+  await db.execute(`
+    UPDATE student
+    SET is_deleted = 1
+    WHERE id = ? AND is_deleted = 0
+  `, [studentId]);
+  res.json({ code: 10 })
+})
 
 app.listen(5050, () => console.log('Server is running on port 5050'));
