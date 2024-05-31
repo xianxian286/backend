@@ -120,7 +120,7 @@ app.post('/courses/:courseId/students', jwtAuth, async (req, res) => {
 });
 
 
-//删除学生
+//删除学生(untested)
 app.use('/courses/:courseId/students/:studentId', jwtAuth, async (req, res) => {
   const { studentId } = req.params;
   await db.execute(`
@@ -131,4 +131,17 @@ app.use('/courses/:courseId/students/:studentId', jwtAuth, async (req, res) => {
   res.json({ code: 10 })
 })
 
+
+//添加课时(untested)
+app.post('/courses/:courseId/classes', jwtAuth, async (req, res, next) => {
+  const { courseId } = req.params;
+  const { timestamp } = req.body;
+  const date = new Date(timestamp).setHours(0, 0, 0, 0);
+  const session = new Date(timestamp).getHours < 12 ? 0 : 1
+  await db.execute(`
+    INSERT INTO class(course_id, date, session)
+    VALUES(?, ?, ?)
+  `, [courseId, date, session]);
+  res.json({ code: 5 })
+})
 app.listen(5050, () => console.log('Server is running on port 5050'));
