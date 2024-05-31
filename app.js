@@ -120,7 +120,7 @@ app.post('/courses/:courseId/students', jwtAuth, async (req, res) => {
 });
 
 
-//删除学生(untested)
+//删除学生
 app.use('/courses/:courseId/students/:studentId', jwtAuth, async (req, res) => {
   const { studentId } = req.params;
   await db.execute(`
