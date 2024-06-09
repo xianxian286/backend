@@ -144,4 +144,18 @@ app.post('/courses/:courseId/classes', jwtAuth, async (req, res, next) => {
   `, [courseId, date, session]);
   res.json({ code: 5 })
 })
+
+//获取课程的所有异常考勤(untested)
+app.get('/couses/:couseId/attendances', jwtAuth, async (req, res) => {
+  const { courseId } = req.params;
+  const [attendances] = await db.execute(`
+    SELECT stu.name, cls.date, cls.session, att.status
+    FROM attendance att
+    JOIN student stu ON stu.id = attstudent_id
+    JOIN class cls ON cls.id = att.class_id
+    WHERE att.course_id = ? AND att.status != 0
+    ORDER BY cls.date, cls.session
+  `, [courseId]);
+  res.json(attendances);
+});
 app.listen(5050, () => console.log('Server is running on port 5050'));
