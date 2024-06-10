@@ -158,4 +158,27 @@ app.get('/couses/:couseId/attendances', jwtAuth, async (req, res) => {
   `, [courseId]);
   res.json(attendances);
 });
+
+// 获取一节课的考勤(untested)
+app.get('/courses/:courseId/attendances/classes/:classId',
+  jwtAuth,
+  async (req, res) => {
+  const { classId } = req.params;
+  const [attendances] = await db.execute(`
+  SELECT student_id, status
+  FROM attendance
+  WHERE class_id = ?`, [classId]);
+  res.json(attendances);
+  });
+
+//添加考勤记录
+app.post('/courses/:courseId/attendances/classes/:classId/students/:studentId', jwtAuth, async(req, res) => {
+  const { courseId, classId, studentId } = req.params;
+  const { status } = req.body;
+  await db.execute(`
+  INSERT INTO attendance(course_id, class_id, student_id, status)
+  VALUES(?, ?, ?, ?)
+  `, [courseId, classId, studentId, status]);
+  res.json({ code: 6 })
+})
 app.listen(5050, () => console.log('Server is running on port 5050'));
