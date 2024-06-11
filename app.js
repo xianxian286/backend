@@ -181,4 +181,66 @@ app.post('/courses/:courseId/attendances/classes/:classId/students/:studentId', 
   `, [courseId, classId, studentId, status]);
   res.json({ code: 6 })
 })
+
+//修改考勤记录
+app.patch('courses/:courseId/attendances/classes/:classId/students/:studentId', jwtAuth, async (req, res) => {
+  const { classId, studentId } = req.params;
+  const { status } = req.body;
+  await db.execute(`
+  UPDATE attendance
+  SET status = ?
+  WHERE student_id = ? AND class_id = ?
+  `, [status, studentId, classId]);
+  res.json({ code: 7});
+})
+
+// 获取课程的所有得分纪录
+app.get('/courses/:courseId/scores', jwtAuth, async (req, res) => {
+  const { courseId } = req. params;
+  const [scores] = await db. execute(`
+  SELECT stu.name, cls.date, cls.session, sc.score
+  FROM score sc
+  JOIN student stu ON stu. id = sc. student_id
+  JOIN class cls ON cls. id = sc. class_id
+  WHERE sc.course_id = ?
+  ORDER BY cls. date, cls.session `, [courseId]
+);
+res.json(scores);
+});
+
+// 获取一节课的所有学生的得分纪录
+app.get('/courses/:courseId/scores/classes/:classId', jwtAuth,
+async (req, res) => {
+const { classId } = req.params;
+const [scores] = await db.execute(`
+SELECT student_id, score
+FROM score
+WHERE class_id = ?
+`, [classId]
+);
+res.json (scores);
+});
+
+//添加积分记录
+app.post('/courses/:courseId/scores/classes/:classId/students/:studentId', jwtAuth, async (req, res) => {
+  const { score } = req.body;
+  const {courseId, classId, studentId } = req.params;
+  await db.execute(`
+  INSERT INTO score(course_id, class_id, student_id, score)
+  VALUES(?, ?, ?, ?)
+  `, [courseId, classId, studentId, score]);
+  res.json({ code: 8 });
+});
+
+//修改积分记录
+app.patch('couses/:courseId/scores/classes/:classId/students/:studentId', jwtAuth, async (req, res) => {
+  const { classId, studentId } = req.params;
+  const { score } = req.body;
+  await db.execute(`
+  UPDATE score
+  SET score = ?
+  WHERE student_id = ? AND class_id = ?
+  `, [score, studentId, classId]);
+  res.json({ code: 9 });
+});
 app.listen(5050, () => console.log('Server is running on port 5050'));
